@@ -65,7 +65,7 @@ services:
     rootDir: frontend
     plan: free
     buildCommand: npm install && npm run build
-    publishPath: dist
+    staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
         value: https://smt-api.onrender.com # match the deployed API URL

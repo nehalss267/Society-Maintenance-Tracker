@@ -47,14 +47,15 @@ background jobs, and full audit logging.
 ## Repository Layout
 
 ```
-society_maintenance_tracker/
+Society-Maintenance-Tracker/
 ├── backend/            FastAPI app (app/core|models|schemas|routers|services|workers)
 │   ├── alembic/        DB migrations
 │   ├── scripts/        seed.py demo data
 │   └── tests/          pytest suite (31 tests)
 ├── frontend/           React SPA (pages, role-based layout, auth context)
 ├── database/           Reference SQL schema (schema.sql)
-├── docs/               architecture.md · system-design.md · deployment.md · roadmap.md
+├── docs/               architecture.md · deployment.md · roadmap.md · ...
+├── system-design.md    System design document
 ├── docker-compose.yml  Postgres (:5433) + Redis (:6379) for local dev
 └── render.yaml         Render blueprint: API web service + static frontend
 ```
