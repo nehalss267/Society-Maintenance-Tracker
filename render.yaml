@@ -5,8 +5,10 @@
 #   2. smt-frontend  React/Vite SPA served as a static site
 #
 # Database: create a free Postgres at neon.tech and paste its connection
-# string into the DATABASE_URL env var of the smt-api service (marked
-# sync: false below so the secret never lives in this file).
+# strings into the smt-api service env vars (marked sync: false below so
+# the secrets never live in this file):
+#   DATABASE_URL           pooled string  (...-pooler...host) - app traffic
+#   DATABASE_URL_UNPOOLED  direct string  (no -pooler)        - alembic at boot
 #
 # Scheduled jobs: no Redis/Celery in prod. Set JOB_EXECUTION_MODE=inline and
 # point cron-job.org (free) at:
@@ -28,7 +30,9 @@ services:
       - key: PYTHON_VERSION
         value: 3.11.9
       - key: DATABASE_URL
-        sync: false # Neon Postgres connection string
+        sync: false # Neon pooled connection string (app traffic)
+      - key: DATABASE_URL_UNPOOLED
+        sync: false # Neon direct connection string (alembic migrations)
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS

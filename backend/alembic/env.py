@@ -1,3 +1,4 @@
+import os
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -11,7 +12,12 @@ import app.models  # noqa: F401  (imports all models for autogenerate)
 
 config = context.config
 
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# Migrations need a direct (unpooled) connection - Neon's pooled endpoint
+# (PgBouncer transaction mode) doesn't support session-level operations.
+config.set_main_option(
+    "sqlalchemy.url",
+    os.getenv("DATABASE_URL_UNPOOLED", settings.DATABASE_URL),
+)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)

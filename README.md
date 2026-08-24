@@ -6,6 +6,16 @@ lifecycle with SLA-based overdue detection, and everyone stays informed via a no
 board and email updates. Includes billing, UPI payments, expense/fund accounting,
 background jobs, and full audit logging.
 
+## Live App
+
+| Service | URL |
+|---|---|
+| Frontend (React SPA) | https://smt-frontend-u3e6.onrender.com |
+| API (FastAPI) | https://smt-api-w11c.onrender.com |
+| Swagger/OpenAPI docs | https://smt-api-w11c.onrender.com/docs |
+| Health check | https://smt-api-w11c.onrender.com/health |
+
+> Free tier note: services spin down after ~15 min idle; first request may take ~50 s to wake up.
 
 ## Features
 
@@ -143,8 +153,8 @@ A human-readable reference of the full target schema is in
 
 Free-tier production stack (Render web service + Render static site + Neon Postgres +
 cron-job.org for scheduled jobs), provisionable in one click via
-[`render.yaml`](render.yaml). Step-by-step guide: [`docs/deployment.md`](docs/deployment.md).
-Architecture overview: [`docs/system-design.md`](docs/system-design.md).
+[`render.yaml`](render.yaml). Step-by-step guide:
+Architecture overview: [`system-design.md`](system-design.md).
 
 ## License
 
