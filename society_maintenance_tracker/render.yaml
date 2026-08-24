@@ -1,0 +1,75 @@
+# Render Blueprint - Society Maintenance Tracker
+#
+# Deploys two free-tier services:
+#   1. smt-api       FastAPI backend (alembic migrations run at boot)
+#   2. smt-frontend  React/Vite SPA served as a static site
+#
+# Database: create a free Postgres at neon.tech and paste its connection
+# string into the DATABASE_URL env var of the smt-api service (marked
+# sync: false below so the secret never lives in this file).
+#
+# Scheduled jobs: no Redis/Celery in prod. Set JOB_EXECUTION_MODE=inline and
+# point cron-job.org (free) at:
+#     POST {API_URL}/api/internal/jobs/billing-run/{YYYY-MM}
+#     POST {API_URL}/api/internal/jobs/late-fees
+#     POST {API_URL}/api/internal/jobs/recurring-expenses/{YYYY-MM}
+# with header X-Cron-Secret=<CRON_SECRET>.
+
+services:
+  - type: web
+    name: smt-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    healthCheckPath: /health
+    buildCommand: pip install -r requirements.txt
+    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DATABASE_URL
+        sync: false # Neon Postgres connection string
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://smt-frontend.onrender.com # matching the deployed frontend URL
+      - key: JOB_EXECUTION_MODE
+        value: inline
+      - key: CRON_SECRET
+        generateValue: true
+      # Payments - blank = simulated payment mode; add real keys + webhook secret to go live
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      # Storage - Render free disk is ephemeral; set Cloudinary creds for persistent photos
+      - key: STORAGE_BACKEND
+        value: local
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      # Email - blank = log-only delivery
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        value: Society Maintenance Tracker <onboarding@resend.dev>
+
+  - type: web
+    name: smt-frontend
+    runtime: static
+    rootDir: frontend
+    plan: free
+    buildCommand: npm install && npm run build
+    publishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://smt-api.onrender.com # match the deployed API URL
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

@@ -17,9 +17,7 @@ def get_current_user(
     db: Session = Depends(get_db),
 ) -> User:
 
-    user_id = decode_access_token(
-        credentials.credentials
-    )
+    user_id = decode_access_token(credentials.credentials)
 
     if not user_id:
         raise HTTPException(
@@ -46,13 +44,13 @@ def get_current_user(
     return user
 
 
-def require_role(required_role: UserRole):
+def require_roles(*allowed_roles: UserRole):
 
     def role_checker(
         current_user: User = Depends(get_current_user),
     ) -> User:
 
-        if current_user.role != required_role:
+        if current_user.role not in allowed_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Insufficient permissions",
@@ -61,3 +59,15 @@ def require_role(required_role: UserRole):
         return current_user
 
     return role_checker
+
+
+# Shared role guards (ADR-007)
+require_resident_or_staff = require_roles(*UserRole)  # any authenticated role
+require_admin = require_roles(UserRole.ADMIN)
+require_committee = require_roles(UserRole.ADMIN, UserRole.COMMITTEE)
+require_accountant = require_roles(UserRole.ADMIN, UserRole.ACCOUNTANT)
+require_staff = require_roles(
+    UserRole.ADMIN,
+    UserRole.COMMITTEE,
+    UserRole.ACCOUNTANT,
+)

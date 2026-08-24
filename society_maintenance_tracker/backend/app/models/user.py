@@ -11,6 +11,8 @@ from app.core.database import Base
 
 class UserRole(str, enum.Enum):
     RESIDENT = "RESIDENT"
+    COMMITTEE = "COMMITTEE"
+    ACCOUNTANT = "ACCOUNTANT"
     ADMIN = "ADMIN"
 
 

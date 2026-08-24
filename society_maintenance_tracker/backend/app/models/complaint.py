@@ -95,3 +95,10 @@ class Complaint(Base):
         back_populates="complaint",
         cascade="all, delete-orphan",
     )
+
+    sla = relationship(
+        "ComplaintSla",
+        back_populates="complaint",
+        cascade="all, delete-orphan",
+        uselist=False,
+    )

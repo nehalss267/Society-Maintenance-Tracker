@@ -1,56 +1,35 @@
-# Environment / secrets
-
 .env
 .env.*
-
-# Python
+!.env.example
+docs/
 
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-
 .venv/
 venv/
 env/
-
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
-
 *.egg-info/
-dist/
-build/
-
-# Uploaded files
-
-backend/uploads/
-uploads/
-
-# Node / React
 
 node_modules/
-
 frontend/dist/
 frontend/.vite/
-
-# Build artifacts
 
 dist/
 build/
 .next/
 out/
 
-# IDE / editor
+backend/uploads/*
+!backend/uploads/.gitkeep
 
 .vscode/
 .idea/
-
-# OS
-
 .DS_Store
 Thumbs.db
-
-# Logs
 
 *.log

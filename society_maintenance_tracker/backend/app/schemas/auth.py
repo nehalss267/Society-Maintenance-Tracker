@@ -1,6 +1,7 @@
+import re
 import uuid
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.models.user import UserRole
 
@@ -10,7 +11,16 @@ class RegisterRequest(BaseModel):
 
     email: EmailStr
 
-    password: str = Field(min_length=6, max_length=100)
+    password: str = Field(min_length=8, max_length=100)
+
+    @field_validator("password")
+    @classmethod
+    def password_complexity(cls, v: str) -> str:
+        if not re.search(r"[A-Za-z]", v) or not re.search(r"\d", v):
+            raise ValueError(
+                "Password must contain at least one letter and one digit."
+            )
+        return v
 
 
 class LoginRequest(BaseModel):
