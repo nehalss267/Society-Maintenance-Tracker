@@ -45,3 +45,57 @@ def test_upload_path_traversal_contained(client):
 
     ok = resolve_local_path("/uploads/documents/somefile.png")
     assert ok is not None
+
+
+PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
+JPEG_MAGIC = b"\xff\xd8\xff\xe0"
+
+
+def test_complaint_photo_magic_bytes_enforced(client, resident):
+    """Spoofed uploads (text bytes declared as image/png) must be rejected."""
+    auth, _ = resident
+
+    r = client.post(
+        "/api/complaints",
+        headers=auth,
+        data={
+            "category": "PLUMBING",
+            "description": "Photo upload validation test complaint.",
+        },
+        files={"photo": ("fake.png", b"definitely not an image payload", "image/png")},
+    )
+    assert r.status_code == 422
+
+    r = client.post(
+        "/api/complaints",
+        headers=auth,
+        data={
+            "category": "PLUMBING",
+            "description": "Photo upload validation test complaint.",
+        },
+        files={"photo": ("swap.jpg", PNG_MAGIC + b"0" * 20, "image/jpeg")},
+    )
+    assert r.status_code == 422
+
+    r = client.post(
+        "/api/complaints",
+        headers=auth,
+        data={
+            "category": "PLUMBING",
+            "description": "Photo upload validation test complaint.",
+        },
+        files={"photo": ("gif.png", b"GIF89a" + b"0" * 10, "image/png")},
+    )
+    assert r.status_code == 422
+
+    r = client.post(
+        "/api/complaints",
+        headers=auth,
+        data={
+            "category": "PLUMBING",
+            "description": "Photo upload validation test complaint.",
+        },
+        files={"photo": ("real.png", PNG_MAGIC + b"0" * 20, "image/png")},
+    )
+    assert r.status_code == 201
+    assert r.json()["photo_url"]

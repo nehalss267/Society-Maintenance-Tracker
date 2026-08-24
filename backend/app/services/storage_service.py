@@ -31,8 +31,26 @@ ALLOWED_RECEIPT_TYPES = {
 }
 
 
+IMAGE_MAGIC = (
+    (b"\xff\xd8", ".jpg"),
+    (b"\x89PNG", ".png"),
+)
+
+
+def _sniff_image_extension(head: bytes) -> str | None:
+    """Return canonical extension from file magic bytes, or None."""
+    for magic, ext in IMAGE_MAGIC:
+        if head.startswith(magic):
+            return ext
+
+    if head.startswith(b"RIFF") and head[8:12] == b"WEBP":
+        return ".webp"
+
+    return None
+
+
 def validate_image(upload: UploadFile) -> str:
-    """Validate content type and size; returns the canonical file extension."""
+    """Validate content type, size and magic bytes; returns the extension."""
     extension = ALLOWED_IMAGE_TYPES.get(upload.content_type or "")
 
     if not extension:
@@ -49,6 +67,14 @@ def validate_image(upload: UploadFile) -> str:
 
     if size > settings.UPLOAD_MAX_BYTES:
         raise StorageError("File too large. Max 5 MB.")
+
+    head = upload.file.read(12)
+    upload.file.seek(0)
+
+    if _sniff_image_extension(head) != extension:
+        raise StorageError(
+            "File content does not match its declared image type."
+        )
 
     return extension
 

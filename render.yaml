@@ -36,7 +36,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: https://smt-frontend.onrender.com # matching the deployed frontend URL
+        value: https://smt-frontend-u3e6.onrender.com # matching the deployed frontend URL
       - key: JOB_EXECUTION_MODE
         value: inline
       - key: CRON_SECRET
@@ -71,7 +71,7 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
-        value: https://smt-api.onrender.com # match the deployed API URL
+        value: https://smt-api-w11c.onrender.com # match the deployed API URL
     routes:
       - type: rewrite
         source: /*
