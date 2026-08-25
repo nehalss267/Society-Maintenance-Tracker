@@ -145,7 +145,19 @@ async def save_complaint_photo(upload: UploadFile | None) -> str | None:
 
 
 def resolve_photo_url(url: str | None) -> str | None:
-    """Pass through external URLs; local /uploads paths are served as-is."""
+    """Return an absolute URL when PUBLIC_API_URL is configured.
+
+    Stored files live at relative /uploads/* paths on this API; a separately
+    hosted frontend can't resolve those against its own origin, so responses
+    prefix them with the API's public base URL. External URLs (Cloudinary)
+    and the empty/unconfigured case pass through unchanged.
+    """
+    if not url or not settings.PUBLIC_API_URL:
+        return url
+
+    if url.startswith("/uploads/"):
+        return f"{settings.PUBLIC_API_URL.rstrip('/')}{url}"
+
     return url
 
 

@@ -41,6 +41,10 @@ class Settings(BaseSettings):
     # Base URL of the frontend - used to build password-reset links
     FRONTEND_URL: str = "http://localhost:5173"
 
+    # Public base URL of this API - prefixes stored-file paths (/uploads/*)
+    # so separately hosted frontends can load them. Empty = relative paths.
+    PUBLIC_API_URL: str = ""
+
     model_config = SettingsConfigDict(
         env_file=".env",
         case_sensitive=True,

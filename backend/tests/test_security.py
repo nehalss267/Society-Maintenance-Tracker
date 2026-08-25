@@ -99,3 +99,50 @@ def test_complaint_photo_magic_bytes_enforced(client, resident):
     )
     assert r.status_code == 201
     assert r.json()["photo_url"]
+
+
+def test_resolve_photo_url_prefixing(client, resident, monkeypatch):
+    from app.core.config import settings
+    from app.services.storage_service import resolve_photo_url
+
+    monkeypatch.setattr(settings, "PUBLIC_API_URL", "https://api.example.com")
+    assert (
+        resolve_photo_url("/uploads/complaints/a.png")
+        == "https://api.example.com/uploads/complaints/a.png"
+    )
+    # external URLs pass through untouched
+    assert (
+        resolve_photo_url("https://res.cloudinary.com/demo/x.png")
+        == "https://res.cloudinary.com/demo/x.png"
+    )
+    assert resolve_photo_url(None) is None
+
+    monkeypatch.setattr(settings, "PUBLIC_API_URL", "")
+    assert resolve_photo_url("/uploads/complaints/a.png") == "/uploads/complaints/a.png"
+
+
+def test_complaint_response_photo_url_absolute_when_configured(
+    client, resident, monkeypatch
+):
+    from app.core.config import settings
+
+    auth, _ = resident
+    png = PNG_MAGIC + b"0" * 20
+
+    monkeypatch.setattr(settings, "PUBLIC_API_URL", "")
+    r = client.post(
+        "/api/complaints",
+        headers=auth,
+        data={
+            "category": "PLUMBING",
+            "description": "Relative url baseline complaint.",
+        },
+        files={"photo": ("rel.png", png, "image/png")},
+    )
+    assert r.status_code == 201
+    assert r.json()["photo_url"].startswith("/uploads/")
+
+    monkeypatch.setattr(settings, "PUBLIC_API_URL", "https://api.example.com")
+    r = client.get(f"/api/complaints/{r.json()['id']}", headers=auth)
+    assert r.json()["photo_url"] is not None
+    assert r.json()["photo_url"].startswith("https://api.example.com/uploads/")

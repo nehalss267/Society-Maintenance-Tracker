@@ -39,6 +39,8 @@ services:
         value: https://smt-frontend-u3e6.onrender.com # matching the deployed frontend URL
       - key: FRONTEND_URL
         value: https://smt-frontend-u3e6.onrender.com # used to build password-reset links
+      - key: PUBLIC_API_URL
+        value: https://smt-api-w11c.onrender.com # makes /uploads file URLs absolute
       - key: JOB_EXECUTION_MODE
         value: inline
       - key: CRON_SECRET

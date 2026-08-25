@@ -48,7 +48,7 @@ from app.services.complaint_service import InvalidStatusTransition
 from app.services.complaint_service import (
     validate_status_transition,
 )
-from app.services.storage_service import StorageError
+from app.services.storage_service import StorageError, resolve_photo_url
 
 
 router = APIRouter(
@@ -198,7 +198,7 @@ def list_my_complaints(
             resident_id=c.resident_id,
             category=c.category,
             description=c.description,
-            photo_url=c.photo_url,
+            photo_url=resolve_photo_url(c.photo_url),
             status=c.status,
             priority=c.priority,
             created_at=c.created_at,
@@ -323,7 +323,7 @@ def list_all_complaints(
                 resident_id=c.resident_id,
                 category=c.category,
                 description=c.description,
-                photo_url=c.photo_url,
+                photo_url=resolve_photo_url(c.photo_url),
                 status=c.status,
                 priority=c.priority,
                 created_at=c.created_at,
@@ -430,7 +430,7 @@ def update_priority(
         resident_id=complaint.resident_id,
         category=complaint.category,
         description=complaint.description,
-        photo_url=complaint.photo_url,
+        photo_url=resolve_photo_url(complaint.photo_url),
         status=complaint.status,
         priority=complaint.priority,
         created_at=complaint.created_at,
@@ -587,7 +587,7 @@ def _build_detail(
         resident_id=complaint.resident_id,
         category=complaint.category,
         description=complaint.description,
-        photo_url=complaint.photo_url,
+        photo_url=resolve_photo_url(complaint.photo_url),
         status=complaint.status,
         priority=complaint.priority,
         created_at=complaint.created_at,
