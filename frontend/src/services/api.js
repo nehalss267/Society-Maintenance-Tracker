@@ -1,7 +1,13 @@
 import axios from "axios";
 
+// Dev: empty base so Vite's /api proxy handles it. Prod build: fall back to
+// the deployed API if VITE_API_URL was missing/stale at build time.
+const API_BASE =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? "" : "https://smt-api-w11c.onrender.com");
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "",
+  baseURL: API_BASE,
 });
 
 api.interceptors.request.use((config) => {
