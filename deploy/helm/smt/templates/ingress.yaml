@@ -1,0 +1,67 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: smt
+  labels:
+    app: smt
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 6m
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: smt-api
+                port:
+                  number: 8000
+          - path: /health
+            pathType: Exact
+            backend:
+              service:
+                name: smt-api
+                port:
+                  number: 8000
+          - path: /uploads
+            pathType: Prefix
+            backend:
+              service:
+                name: smt-api
+                port:
+                  number: 8000
+          - path: /metrics
+            pathType: Prefix
+            backend:
+              service:
+                name: smt-api
+                port:
+                  number: 8000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: smt-web
+                port:
+                  number: 80
+{{- if .Values.serviceMonitor.enabled }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: smt-api
+  labels:
+    app: smt
+    release: observability
+spec:
+  selector:
+    matchLabels:
+      app: smt
+      component: api
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+{{- end }}

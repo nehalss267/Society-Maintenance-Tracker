@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smt-api
+  labels:
+    app: smt
+    component: api
+spec:
+  replicas: {{ .Values.api.replicas }}
+  selector:
+    matchLabels:
+      app: smt
+      component: api
+  template:
+    metadata:
+      labels:
+        app: smt
+        component: api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ .Values.api.port | quote }}
+        prometheus.io/path: /metrics
+    spec:
+      initContainers:
+        # migrations run in the main container's CMD; wait for the DB first
+        - name: wait-for-db
+          image: postgres:16-alpine
+          command:
+            - sh
+            - -c
+            - >-
+              until pg_isready -h smt-postgres -p 5432
+              -U {{ .Values.postgres.username }}; do sleep 2; done
+      containers:
+        - name: api
+          image: {{ .Values.api.image }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.api.port }}
+          envFrom:
+            - secretRef:
+                name: smt-secrets
+            - configMapRef:
+                name: smt-config
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.api.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.api.port }}
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 192Mi
+            limits:
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: smt-api
+  labels:
+    app: smt
+    component: api
+spec:
+  selector:
+    app: smt
+    component: api
+  ports:
+    - name: http
+      port: 8000
+      targetPort: {{ .Values.api.port }}

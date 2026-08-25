@@ -1,10 +1,14 @@
 import axios from "axios";
 
-// Dev: empty base so Vite's /api proxy handles it. Prod build: fall back to
-// the deployed API if VITE_API_URL was missing/stale at build time.
+// API base resolution:
+// - VITE_API_URL="same-origin" -> "" (nginx proxies /api and /uploads; K8s build)
+// - VITE_API_URL=<url>         -> that URL (explicit override)
+// - unset                      -> "" in dev (Vite proxy), deployed API otherwise
+const RAW = import.meta.env.VITE_API_URL;
 const API_BASE =
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "" : "https://smt-api-w11c.onrender.com");
+  RAW === "same-origin"
+    ? ""
+    : RAW || (import.meta.env.DEV ? "" : "https://smt-api-w11c.onrender.com");
 
 const api = axios.create({
   baseURL: API_BASE,

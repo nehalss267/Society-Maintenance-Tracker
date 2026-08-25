@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smt-web
+  labels:
+    app: smt
+    component: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smt
+      component: web
+  template:
+    metadata:
+      labels:
+        app: smt
+        component: web
+    spec:
+      containers:
+        - name: web
+          image: {{ .Values.web.image }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 30m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: smt-web
+  labels:
+    app: smt
+    component: web
+spec:
+  selector:
+    app: smt
+    component: web
+  ports:
+    - port: 80
+      targetPort: 80

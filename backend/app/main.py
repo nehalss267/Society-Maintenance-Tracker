@@ -85,6 +85,12 @@ app.mount(
     name="uploads",
 )
 
+# Prometheus /metrics (default registry: http request count/latency by
+# handler, method and status). Exposed unauthenticated for cluster scraping.
+from prometheus_fastapi_instrumentator import Instrumentator  # noqa: E402
+
+Instrumentator().instrument(app).expose(app, include_in_schema=False)
+
 
 @app.get("/health")
 def health_check():

@@ -1,0 +1,30 @@
+api:
+  image: smt-api:ci
+  replicas: 1
+  port: 8000
+  env:
+    JOB_EXECUTION_MODE: inline
+    STORAGE_BACKEND: local
+    CORS_ORIGINS: "http://localhost:8080"
+    FRONTEND_URL: "http://localhost:8080"
+    PUBLIC_API_URL: ""
+    RESEND_API_KEY: ""
+
+web:
+  image: smt-web:ci
+
+postgres:
+  image: postgres:16-alpine
+  database: society_db
+  username: smt
+  password: change-me-in-real-envs
+  storage: 2Gi
+
+# random per-install unless overridden (CI passes -set-string)
+secretKey: generate-me
+
+serviceMonitor:
+  enabled: true
+
+ingress:
+  className: nginx
