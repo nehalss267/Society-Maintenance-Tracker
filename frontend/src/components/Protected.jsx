@@ -35,4 +35,8 @@ export function RequireRoles({ roles, children }) {
 }
 
 export const homeFor = (role) =>
-  role === "RESIDENT" ? "/" : role === "ACCOUNTANT" ? "/accounting-dash" : "/staff";
+  role === "RESIDENT"
+    ? "/dashboard"
+    : role === "ACCOUNTANT"
+      ? "/accounting-dash"
+      : "/staff";

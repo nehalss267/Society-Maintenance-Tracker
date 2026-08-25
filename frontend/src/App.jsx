@@ -4,6 +4,9 @@ import { RequireAuth, RequireRoles, homeFor } from "./components/Protected";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import Settings from "./pages/Settings";
 import DashboardResident from "./pages/DashboardResident";
 import DashboardStaff from "./pages/DashboardStaff";
 import DashboardAccountant from "./pages/DashboardAccountant";
@@ -28,6 +31,8 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           <Route
             element={
@@ -64,6 +69,7 @@ export default function App() {
             />
             <Route path="/complaints" element={<Complaints />} />
             <Route path="/notices" element={<Notices />} />
+            <Route path="/settings" element={<Settings />} />
             <Route
               path="/invoices"
               element={

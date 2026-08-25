@@ -23,6 +23,7 @@ from app.models.notification import (
     NotificationChannel,
     NotificationStatus,
 )
+from app.models.password_reset import PasswordResetToken
 from app.models.payment import Payment, PaymentStatus
 from app.models.reconciliation import PaymentReconciliation, ReconciliationStatus
 from app.models.recurring_expense import ExpenseFrequency, RecurringExpense
@@ -61,4 +62,5 @@ __all__ = [
     "NotificationStatus",
     "Document",
     "DocumentEntity",
+    "PasswordResetToken",
 ]

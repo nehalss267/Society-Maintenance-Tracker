@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     # CORS - comma-separated origins allowed to call the API from a browser
     CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
 
+    # Base URL of the frontend - used to build password-reset links
+    FRONTEND_URL: str = "http://localhost:5173"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         case_sensitive=True,

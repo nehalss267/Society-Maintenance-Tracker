@@ -37,6 +37,8 @@ services:
         generateValue: true
       - key: CORS_ORIGINS
         value: https://smt-frontend-u3e6.onrender.com # matching the deployed frontend URL
+      - key: FRONTEND_URL
+        value: https://smt-frontend-u3e6.onrender.com # used to build password-reset links
       - key: JOB_EXECUTION_MODE
         value: inline
       - key: CRON_SECRET

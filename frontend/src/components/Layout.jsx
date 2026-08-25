@@ -5,12 +5,13 @@ const NAV = [
   {
     section: "General",
     items: [
-      { to: "/", label: "Dashboard", roles: ["RESIDENT"], end: true },
+      { to: "/dashboard", label: "Dashboard", roles: ["RESIDENT"] },
       { to: "/staff", label: "Committee Desk", roles: ["COMMITTEE", "ADMIN"] },
       { to: "/accounting-dash", label: "Finance Desk", roles: ["ACCOUNTANT", "ADMIN"] },
       { to: "/complaints", label: "Complaints", roles: ["RESIDENT", "COMMITTEE", "ACCOUNTANT", "ADMIN"] },
       { to: "/notices", label: "Notices", roles: ["RESIDENT", "COMMITTEE", "ACCOUNTANT", "ADMIN"] },
       { to: "/invoices", label: "My Invoices", roles: ["RESIDENT"] },
+      { to: "/settings", label: "Settings", roles: ["RESIDENT", "COMMITTEE", "ACCOUNTANT", "ADMIN"] },
     ],
   },
   {

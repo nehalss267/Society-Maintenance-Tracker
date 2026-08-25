@@ -19,7 +19,7 @@ export default function Register() {
     setError(null);
     try {
       await register(form.name, form.email, form.password);
-      navigate("/", { replace: true });
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       setError(errDetail(err));
     } finally {
