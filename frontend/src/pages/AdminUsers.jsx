@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import api, { errDetail } from "../services/api";
 import { Badge, Empty, ErrorBox } from "../components/ui";
 
-const ROLES = ["RESIDENT", "COMMITTEE", "ACCOUNTANT", "ADMIN"];
-
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
@@ -16,15 +14,6 @@ export default function AdminUsers() {
       .catch((e) => setError(errDetail(e)));
 
   useEffect(load, [search]);
-
-  const changeRole = async (id, role) => {
-    try {
-      await api.patch(`/api/admin/users/${id}/role`, { new_role: role });
-      load();
-    } catch (err) {
-      alert(errDetail(err));
-    }
-  };
 
   return (
     <div>
@@ -47,7 +36,6 @@ export default function AdminUsers() {
               <th className="th">Name</th>
               <th className="th">Email</th>
               <th className="th">Role</th>
-              <th className="th">Change role</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -56,17 +44,6 @@ export default function AdminUsers() {
                 <td className="td font-medium">{u.name}</td>
                 <td className="td text-slate-500">{u.email}</td>
                 <td className="td"><Badge value={u.role} /></td>
-                <td className="td">
-                  <select
-                    className="text-xs border rounded px-2 py-1"
-                    value={u.role}
-                    onChange={(e) => changeRole(u.id, e.target.value)}
-                  >
-                    {ROLES.map((r) => (
-                      <option key={r}>{r}</option>
-                    ))}
-                  </select>
-                </td>
               </tr>
             ))}
           </tbody>
