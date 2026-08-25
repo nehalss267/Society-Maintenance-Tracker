@@ -8,6 +8,9 @@ const API_BASE =
 
 const api = axios.create({
   baseURL: API_BASE,
+  // Render's free tier sleeps the API after ~15 min idle; waking can take
+  // 50-75s, so allow enough headroom before giving up with an error.
+  timeout: 90000,
 });
 
 api.interceptors.request.use((config) => {
@@ -37,6 +40,10 @@ api.interceptors.response.use(
 );
 
 export function errDetail(e) {
+  if (e.code === "ECONNABORTED") {
+    return "The server took too long to respond (it may be waking up on the free tier). Please try again.";
+  }
+
   return (
     e.response?.data?.detail ||
     (Array.isArray(e.response?.data?.detail)
