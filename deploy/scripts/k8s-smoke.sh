@@ -50,7 +50,8 @@ code=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/api/admin/notices" 
 echo "OK"
 
 echo "=== 7. Prometheus scraping the API ==="
-kubectl -n smt port-forward svc/obs-kube-pr-prometheus 9090:9090 >/dev/null 2>&1 &
+PROM_SVC=$(kubectl -n smt get svc -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/component=server" -o jsonpath='{.items[0].metadata.name}')
+kubectl -n smt port-forward "svc/$PROM_SVC" 9090:9090 >/dev/null 2>&1 &
 PF_PID=$!
 sleep 4
 curl -fsS http://localhost:9090/-/ready >/dev/null
@@ -59,15 +60,16 @@ kill $PF_PID 2>/dev/null || true
 echo "$UP" | grep -q '"value"'
 METRICS_DIRECT=$(curl -fsS "$BASE/metrics" | grep -c '^http_request_duration_seconds_count' || true)
 [ "${METRICS_DIRECT:-0}" -ge 1 ]
-echo "OK"
+echo "OK (prometheus svc: $PROM_SVC)"
 
 echo "=== 8. Grafana API healthy ==="
-kubectl -n smt port-forward svc/obs-grafana 3000:3000 >/dev/null 2>&1 &
+GRAFANA_SVC=$(kubectl -n smt get svc -l "app.kubernetes.io/name=grafana" -o jsonpath='{.items[0].metadata.name}')
+kubectl -n smt port-forward "svc/$GRAFANA_SVC" 3000:3000 >/dev/null 2>&1 &
 GF_PID=$!
 sleep 4
 curl -fsS http://localhost:3000/api/health | grep -q '"database":"ok"'
 kill $GF_PID 2>/dev/null || true
-echo "OK"
+echo "OK (grafana svc: $GRAFANA_SVC)"
 
 echo ""
 echo "ALL SMOKE TESTS PASSED"

@@ -43,11 +43,12 @@ jobs:
           helm repo update
           helm install ing ingress-nginx/ingress-nginx \
             --namespace smt --create-namespace \
+            --version 4.11.3 \
             --set controller.hostPort.enabled=true \
             --set controller.service.type=ClusterIP \
             --set controller.admissionWebhooks.enabled=false \
-            --set controller.nodeSelector."ingress-ready"="true" \
-            --wait --timeout 5m
+            --set controller.nodeSelector."ingress-ready"="true"
+          kubectl -n smt rollout status deploy/ing-ingress-nginx-controller --timeout=480s
 
       - name: Install kube-prometheus-stack
         run: |
@@ -55,12 +56,13 @@ jobs:
           helm repo update
           helm install obs prometheus-community/kube-prometheus-stack \
             --namespace smt \
+            --version 65.5.1 \
             --set alertmanager.enabled=false \
             --set defaultRules.create=false \
             --set grafana.adminPassword=admin123 \
             --set grafana.persistence.enabled=false \
             --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false \
-            --wait --timeout 8m
+            --wait --timeout 10m
 
       - name: Deploy app chart
         run: |
@@ -75,12 +77,19 @@ jobs:
       - name: Smoke tests
         run: bash deploy/scripts/k8s-smoke.sh
 
-      - name: Cluster state on failure
+      - name: Debug dump to run summary
         if: failure()
         run: |
-          kubectl get pods,svc,ingress -A -o wide || true
-          kubectl -n smt logs deploy/smt-api --tail=100 || true
-          kubectl -n smt describe deploy smt-api || true
+          {
+            echo "## Cluster state"
+            'kubectl' get pods,svc,ingress -A -o wide || true
+            echo "## smt-api logs"
+            kubectl -n smt logs deploy/smt-api --tail=80 || true
+            echo "## all events"
+            kubectl get events -A --sort-by=.lastTimestamp | tail -60 || true
+            echo "## helm releases"
+            helm list -A || true
+          } >> "$GITHUB_STEP_SUMMARY" 2>&1
 
   terraform-plan:
     name: Terraform validate + plan (LocalStack)
