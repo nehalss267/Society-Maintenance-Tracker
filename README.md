@@ -33,8 +33,8 @@ background jobs, and full audit logging.
   with atomic insufficient-funds protection.
 - **Documents** - entity-scoped attachments (complaints/invoices/expenses) with
   role-aware read/upload authorization.
-- **Notifications** - queued email delivery (Resend; log-only fallback) for payment
-  receipts, complaint updates, invoices, and notices.
+- **Notifications** - queued email delivery (Gmail SMTP; log-only fallback) for
+  payment receipts, complaint updates, invoices, notices, and password resets.
 - **Dashboards & reports** - role-specific stats plus expense-by-category and
   collections-by-period reports, cached in Redis with targeted invalidation.
 - **Security** - JWT auth, 4-role RBAC, audit log on every mutation, security headers,
@@ -52,7 +52,7 @@ background jobs, and full audit logging.
 | Cache/Jobs | Redis + Celery (dev); inline mode for free-tier prod |
 | Payments | Razorpay (env-gated, simulated fallback) |
 | Files | Local disk (dev) / Cloudinary (prod) |
-| Email | Resend (env-gated fallback) |
+| Email | Gmail SMTP (env-gated fallback) |
 
 ## Repository Layout
 

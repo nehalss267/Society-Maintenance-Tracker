@@ -28,9 +28,12 @@ class Settings(BaseSettings):
     RAZORPAY_KEY_SECRET: str = ""
     RAZORPAY_WEBHOOK_SECRET: str = ""
 
-    # Email (Resend) - blank key = log-only delivery
-    RESEND_API_KEY: str = ""
-    EMAIL_FROM: str = "Society Maintenance Tracker <onboarding@resend.dev>"
+    # Email (Gmail SMTP) - blank creds = log-only delivery.
+    # GMAIL_APP_PASSWORD is a Google App Password (2-Step Verification required),
+    # never the account's normal password.
+    GMAIL_USER: str = ""
+    GMAIL_APP_PASSWORD: str = ""
+    EMAIL_FROM: str = ""
 
     # Scheduler endpoints - requests must present X-Cron-Secret
     CRON_SECRET: str = ""

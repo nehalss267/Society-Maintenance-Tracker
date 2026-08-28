@@ -13,7 +13,7 @@ from app.core.security import (
     verify_password,
 )
 from app.dependencies.auth import get_current_user
-from app.integrations import resend_client
+from app.integrations import gmail_client
 from app.models.audit_log import AuditLog
 from app.models.password_reset import PasswordResetToken
 from app.models.user import User, UserRole
@@ -158,7 +158,7 @@ def _issue_reset_token(db: Session, user: User) -> None:
     )
 
     try:
-        resend_client.send_email(
+        gmail_client.send_email(
             to=user.email,
             subject="Reset your password",
             text=(

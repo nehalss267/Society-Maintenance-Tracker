@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import SessionLocal
 from app.core.config import settings
-from app.integrations import resend_client
+from app.integrations import gmail_client
 from app.models.notification import (
     Notification,
     NotificationChannel,
@@ -114,7 +114,7 @@ def _deliver_now(notification_id: uuid.UUID) -> None:
         if not notification or notification.status != NotificationStatus.PENDING:
             return
 
-        result = resend_client.send_email(
+        result = gmail_client.send_email(
             to=notification.recipient_email,
             subject=notification.subject,
             text=notification.body,

@@ -24,7 +24,7 @@ Integrations are env-gated wrappers:
 | Integration | Configured | Fallback |
 |---|---|---|
 | Razorpay | real orders + HMAC signature verification | simulated orders, `simulate-success` endpoint |
-| Resend | HTTP email delivery | log-only provider |
+| Gmail SMTP | smtplib + STARTTLS | log-only provider |
 | Cloudinary | cloud image/document storage | local `uploads/` directory |
 
 ## 3. Backend structure
@@ -110,4 +110,4 @@ Render blueprint (`render.yaml`): Python web service runs `alembic upgrade head 
 uvicorn` behind `/health`; static site serves the built SPA with rewrite-to-index
 routing. Database is Neon Postgres (`DATABASE_URL`). Cron-job.org hits the internal job
 endpoints on schedule. Cloudinary provides persistent media on ephemeral free disks;
-Resend delivers email. Total infrastructure cost: $0.
+Gmail SMTP delivers email via App Password. Total infrastructure cost: $0.

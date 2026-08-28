@@ -8,7 +8,9 @@ api:
     CORS_ORIGINS: "http://localhost:8080"
     FRONTEND_URL: "http://localhost:8080"
     PUBLIC_API_URL: ""
-    RESEND_API_KEY: ""
+    GMAIL_USER: ""
+    GMAIL_APP_PASSWORD: ""
+    EMAIL_FROM: ""
 
 web:
   image: smt-web:ci
